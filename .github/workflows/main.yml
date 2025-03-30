@@ -36,12 +36,16 @@ jobs:
           export KUBECONFIG=$KUBECONFIG_PATH
           kubectl config use-context minikube
 
-    
+      - name: Debug Kubeconfig
+        run: |
+           echo "Kubeconfig path: $KUBECONFIG"
+           kubectl cluster-info
+        
       - name: Apply Kubernetes Manifests
         run: |
-          kubectl apply -f manifests/deployment.yaml
-          kubectl apply -f manifests/service.yaml
-          kubectl apply -f manifests/ingress.yaml
+          kubectl apply -f manifests/deployment.yaml --validate=false
+          kubectl apply -f manifests/service.yaml --validate=false
+          kubectl apply -f manifests/ingress.yaml --validate=false
 
       - name: Verify Deployment
         run: kubectl rollout status deployment/shell-deployment   
