@@ -35,11 +35,6 @@ jobs:
           echo "${{ secrets.KUBECONFIG}}" | base64 --decode > $KUBECONFIG_PATH
           export KUBECONFIG=$KUBECONFIG_PATH
           kubectl config use-context minikube
-
-      - name: Debug Kubeconfig
-        run: |
-           echo "Kubeconfig path: $KUBECONFIG"
-           kubectl cluster-info
         
       - name: Apply Kubernetes Manifests
         run: |
