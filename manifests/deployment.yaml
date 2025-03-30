@@ -1,6 +1,7 @@
-apiVersion: apps/v1
+aapiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: wisecow
   name: shell-deployment
   labels:
     app: wisecow
