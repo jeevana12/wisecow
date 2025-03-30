@@ -33,6 +33,8 @@ prerequisites() {
 		}
 }
 
+export PATH=$PATH:/usr/games
+
 main() {
 	prerequisites
 	echo "Wisdom served on port=$SRVPORT..."
