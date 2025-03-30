@@ -36,9 +36,7 @@ jobs:
           export KUBECONFIG=$KUBECONFIG_PATH
           kubectl config use-context minikube
 
-      - name: Load Docker Image into Minikube
-        run: minikube image load $IMAGE_NAME
-
+    
       - name: Apply Kubernetes Manifests
         run: |
           kubectl apply -f deployment.yaml
