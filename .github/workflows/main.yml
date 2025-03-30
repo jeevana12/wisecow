@@ -1,4 +1,4 @@
-name: Deploy Wisecow to Existing Minikube
+name: Deploy Wisecow to Minikube in GitHub Actions
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 env:
   IMAGE_NAME: jeevana12/wisecow:latest
-  MINIKUBE_IP: "192.168.59.129"
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -23,20 +23,31 @@ jobs:
         run: |
           docker build -t $IMAGE_NAME .
           docker push $IMAGE_NAME
+
   deploy:
     runs-on: ubuntu-latest
-
+    needs: build-and-push
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup SSH Key
+      - name: Start Minikube
+        uses: medyagh/setup-minikube@master
+
+      - name: Verify Minikube Cluster
+        run: kubectl get nodes
+
+      - name: Pull Image from Docker Hub & Load into Minikube
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H $MINIKUBE_IP >> ~/.ssh/known_hosts
-      - name: Deploy to Local Minikube
+          docker pull $IMAGE_NAME
+          minikube image load $IMAGE_NAME
+
+      - name: Deploy Deployment, Service & Ingress
         run: |
-            ssh -o StrictHostKeyChecking=no user@$MINIKUBE_IP "kubectl apply -f ./manifests"
+            kubectl apply -f manifests/deployment.yaml
+            kubectl apply -f manifests/service.yaml
+            kubectl apply -f manifests/ingress.yaml
         
+
+      - name: Verify Deployment
+        run: kubectl get pods -A
